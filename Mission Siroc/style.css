@@ -1,0 +1,51 @@
+
+
+body {
+    background-color: sandybrown;
+    background: linear-gradient(20deg, sandybrown, saddlebrown);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+    font-size: 40px;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 30px; 
+    margin-top: 20px;
+}
+
+#canvas {
+    display: none;
+    border-radius: 25px;
+    /* background-image: url(./assets/gameBackground.png); */
+}
+
+#canvasStart {
+    display: flex;
+    border-radius: 25px;
+    background-image: url('./assets/title.png');
+
+}
+
+#canvasEnd {
+    display: none;
+    border-radius: 25px;
+    background-image: url('./assets/end.png');
+}
+
+#canvasWin {
+    display: 'none' ;
+    border-radius: 25px;
+    background-image: url('./assets/win.png');
+}
+
+div.tiny {
+    font-size: 9px;
+    height:20px;
+    padding:0;
+    margin:0;
+}
