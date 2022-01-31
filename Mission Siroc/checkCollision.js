@@ -1,4 +1,4 @@
-import Stone from "./gameObjects/stone.js"
+import Rock from "./gameObjects/stone.js"
 
 class Collision {
     constructor() {
@@ -10,7 +10,7 @@ class Collision {
             general: false,
         }
 
-        this.jumpabove = false; 
+        this.jumpabove = false;
     }
 
     checkCollisionBetween(gameObjectA, gameObjectB) {
@@ -24,18 +24,18 @@ class Collision {
         if (
             bbA.x + bbA.w >= bbB.x &&
             bbA.x <= bbB.x + bbB.w &&
-            bbA.y + bbA.h <= bbB.y && 
-            gameObjectB instanceof Stone
+            bbA.y + bbA.h <= bbB.y &&
+            gameObjectB instanceof Rock
         ) {
             console.log("Jump above");
-            this.jumpabove = true; 
-            this.direction.bottom = true; 
-            
+            this.jumpabove = true;
+            this.direction.bottom = true;
+
             gameObjectA.groundY = bbB.y;
             this.direction.right = false;
             this.direction.left = false;
-           return;
-        } else{
+            return;
+        } else {
             gameObjectA.groundY = gameObjectA.CONFIG.height;
         }
 
@@ -49,7 +49,7 @@ class Collision {
 
             this.direction.right = (
                 bbA.x + bbA.w >= bbB.x &&
-                bbA.y + bbA.h >= bbB.y 
+                bbA.y + bbA.h >= bbB.y
             )
 
             if (gameObjectA.dx > -1 && bbA.x + bbA.w >= bbB.x &&
@@ -59,7 +59,7 @@ class Collision {
             } else if (gameObjectA.dx === -1) {
                 this.direction.left = true;
                 console.log('collision left');
-            } 
+            }
 
             this.direction.bottom = false;
 
@@ -78,12 +78,7 @@ class Collision {
         }
 
     }
-    //gameObjectA.groundY = gameObjectA.CONFIG.height;
-
-  
 
 }
-
-
 
 export default Collision;

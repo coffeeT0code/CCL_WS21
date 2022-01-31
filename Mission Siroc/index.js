@@ -58,7 +58,6 @@ const init = () => {
     img = new Image();
     img.src = './assets/gameBackground.png';
 
-
     // creating the Player as an instance of a class
     player = new Player(ctx, 0, 430, 150, 183, CONFIG);
 
@@ -73,6 +72,7 @@ const init = () => {
     // instantiating the collision of stone and cactus
     collision = new Collision();
     collisionCactus = new Collision();
+
     // spawning the first obstacle
     spawnObstacles();
 
@@ -92,13 +92,19 @@ const gameLoop = () => {
     update(timePassedSinceLastRender);
     render();
 
+    // function to make the animation calls gameloop. 
     requestAnimationFrame(gameLoop);
 
 }
 
+
+// this function is used for calculations or other functions that need to update permanently
 const update = (timePassedSinceLastRender) => {
+    // calls the update function in the player class
     player.update(timePassedSinceLastRender);
 
+
+    // if the acheived points are the same as the value to win the homebase spawns as new object 
     if (pointsDisplay === pointsToWin) {
         console.log('you won!')
         if (base === undefined) {
@@ -106,8 +112,7 @@ const update = (timePassedSinceLastRender) => {
             obstacles.push(base)
         }
 
-        
-
+        // if the player hits the base the endscreen appears, movement will be disabled, points are resetted to 0 and obstacles are resetted.
         if (player.x >= base.getBoundingBox().x) {
             currentScore = pointsDisplay;
             canvas.style.display = 'none'
@@ -126,61 +131,64 @@ const update = (timePassedSinceLastRender) => {
         }
     }
 
-
+    // creating an array that should save the obstacles that need to be removed
     let obstaclesToRemove = [];
 
+    // pushing the obstacles that are not visible anymore in the obstaclesToRemove Array
     obstacles.forEach(obstacle => {
         if (obstacle.x + obstacle.width < 0) {
             obstaclesToRemove.push(obstacle)
         }
     })
+    // deleting the obstacles in the Array and increasing the points
     obstaclesToRemove.forEach(obstacle => {
         obstacles.splice(obstacles.indexOf(obstacle), 1)
         pointsDisplay++;
+        // the points are not increasing when the obstacles is the base
         if (obstacle === base) {
-            pointsDisplay--; 
-            base = undefined; 
+            pointsDisplay--;
+            base = undefined;
         }
         spawnObstacles();
     })
 
+    // start of the collion detection
+
     player.canGoRight = true;
 
+    // collision between player and rock
     if (!player.isDead && rock != undefined && collision.checkCollisionBetween(player, rock)) {
 
-
+        // if the player collides with their right side -> border the desert floor = ground
         if (collision.direction.right && player.dy != -1 && !collision.direction.left) {
             player.x = (rock.getBoundingBox().x - rock.getBoundingBox().w / 2);
             player.canGoRight = false;
-            player.groundY = player.CONFIG.height;
-            console.log("coliding right")
-
+            player.groundY
+             = player.CONFIG.height;
         }
 
+        // enables jumping and staying on the rock
         if (collision.direction.bottom) {
 
             player.groundY = rock.getBoundingBox().y;
-            console.log('jump on rock')
         }
     }
 
 
     // when the player jumps on the cactus, he dies
     if (!player.isDead && cactus != undefined &&
-
         (player.getBoundingBox().x + player.getBoundingBox().w >= cactus.getBoundingBox().x &&
             player.getBoundingBox().x <= cactus.getBoundingBox().x + cactus.getBoundingBox().w &&
             player.getBoundingBox().y + player.getBoundingBox().w >= cactus.getBoundingBox().y + 100)
 
     ) {
-        console.log("dead");
         player.isDead = true;
         player.dx = 0;
         player.groundY = player.CONFIG.height;
     }
 
+    // if there is a collision between the player and a cactus 
     if (!player.isDead && cactus != undefined && collisionCactus.checkCollisionBetween(player, cactus)) {
-        console.log("cactus colliding");
 
         // when the player dies disable all keyboard commands in player.js and set dx to 0. 
         player.isDead = true;
@@ -188,19 +196,17 @@ const update = (timePassedSinceLastRender) => {
         player.state = 'idle'
         obstacles.lenght = 0;
 
+        // make the Gameover screen canvas visible
         canvas.style.display = 'none';
         canvasEnd.style.display = 'flex';
-
+        // saves current points and sets the points to 0 for the next round
         currentScore = pointsDisplay;
         pointsDisplay = 0;
-
     }
 
-
+    // game over if the player collides with the storm 
     if (!player.isDead && player.getBoundingBox().x < storm.getBoundingBox().x + storm.getBoundingBox().w) {
 
-
-        console.log('strom got you')
         // when the player dies disable all keyboard commands in player.js and set dx to 0. 
         player.isDead = true;
         player.dx = 0;
@@ -208,9 +214,8 @@ const update = (timePassedSinceLastRender) => {
         obstacles.lenght = 0;
         currentScore = pointsDisplay;
 
-        if (!base === undefined ) {
-            console.log( 'undefined')
-            base = undefined; 
+        if (!base === undefined) {
+            base = undefined;
         }
 
         canvas.style.display = 'none';
@@ -223,9 +228,10 @@ const update = (timePassedSinceLastRender) => {
 
 };
 
-
+// mostly for drawing on the canvas
 function render() {
 
+    // resets canvas
     ctxEnd.clearRect(0, 0, CONFIG.width, CONFIG.height);
     ctx.clearRect(0, 0, CONFIG.width, CONFIG.height);
     ctxWin.clearRect(0, 0, CONFIG.width, CONFIG.height);
@@ -236,6 +242,7 @@ function render() {
     ctxEnd.fillText(`Press "Enter" to restart `, CONFIG.width / 2 + 45, 330 + 80)
     ctxEnd.resetTransform();
 
+    // only show this if the win canvas is displayed
     if (canvasWin.style.display === 'flex') {
         ctxWin.font = "40px Arial";
         ctxWin.fillStyle = 'black'
@@ -245,9 +252,8 @@ function render() {
         ctxWin.resetTransform();
     }
 
-    
-    // scrolling background image
 
+    // scrolling background image
     ctx.drawImage(img, imgWidth, 0, );
     ctx.drawImage(img, imgWidth + CONFIG.width * 2 - 1.5, 0)
 
@@ -260,10 +266,12 @@ function render() {
     ctx.resetTransform();
 
     player.render();
+    // calls render function of all obstacles (Cactus, Rock, Storm)
     obstacles.forEach((obstacles) => {
         obstacles.render();
     })
 
+    // design of the in game point display
     ctx.fillStyle = '#321f32';
     ctx.fillRect(0, 0, 200, 70)
     ctx.fillStyle = 'white'
@@ -272,6 +280,7 @@ function render() {
 
 }
 
+// randomly spawing either cacti or rocks
 function spawnObstacles() {
     cactus = undefined;
     rock = undefined;
@@ -287,22 +296,19 @@ function spawnObstacles() {
             obstacles.push(rock);
         }
     }
-
-
-
 }
 
 
+// only  if the starting canvas is displayed
 if (canvasStart.style.display === 'flex') {
     ctxStart.font = "29px Arial";
     ctxStart.fillStyle = 'black'
     ctxStart.fillText(`Press "Enter" to start `, CONFIG.width / 2 + 100, 500)
-    ctxStart.resetTransform(); 
-    ctxStart.clearRect(0,0,CONFIG.width, CONFIG.height)
+    ctxStart.resetTransform();
+    ctxStart.clearRect(0, 0, CONFIG.width, CONFIG.height)
 }
 
-
-
+// enables press Enter to start or restart
 document.addEventListener('keypress', (event) => {
     if (event.key === 'Enter' && canvasStart.style.display === 'flex') {
         canvasStart.style.display = 'none';
@@ -318,6 +324,5 @@ document.addEventListener('keypress', (event) => {
         player.x = 0 + player.width;
         player.y = CONFIG.height - player.height / 2;
         pointsDisplay = 0;
-
     }
 })
