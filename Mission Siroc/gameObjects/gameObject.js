@@ -7,28 +7,21 @@ class GameObject {
         this.width = width;
         this.height = height;
         this.CONFIG = CONFIG;
-        this.gameSpeed = 5;
-        this.init();
-
-        this.backgroundLayer1;
-        this.backgroundLayer2;
         this.groundY = CONFIG.height;
+        this.init();
     }
 
+    // basic structure as template
     init() {
-
-
     }
 
 
     update() {
-
-
-
     }
 
     render() {
 
+        // visualization of the boundingboxes in debug mode
         if (this.CONFIG.debug) {
             let bb = this.getBoundingBox();
             
@@ -41,17 +34,17 @@ class GameObject {
 
             this.ctx.arc(this.x, this.y, 10, 0, Math.PI *2);
             this.ctx.resetTransform();
-            // this.ctx.clearRect();
         }
 
     }
 
-
-
+    // function to determine the coordinates from the sprite sheet for each frame
     getImageSpriteCoordinates(sprite) {
 
+        // loop through the frames
         let frameX = Math.floor(performance.now() / 1000 * sprite.fps % sprite.frames);
-
+        
+        // calculating the coordinates
         let coordinates = {
             sourceX: frameX * sprite.frameSize.width,
             sourceY: 0,
@@ -61,6 +54,7 @@ class GameObject {
         return coordinates;
     }
 
+    // setting the values for the bounding box
     getBoundingBox() {
 
         return {

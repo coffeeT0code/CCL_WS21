@@ -1,30 +1,24 @@
 import GameObject from "./gameObject.js";
 
 class Player extends GameObject {
-    constructor(ctx, x, y, width, height, CONFIG,) {
-        super(ctx, x, y, width, height, CONFIG,)
+    constructor(ctx, x, y, width, height, CONFIG, ) {
+        super(ctx, x, y, width, height, CONFIG, )
 
         this.dx = 0;
         this.dy = 0;
         this.lastDirection = 1;
         this.speed = 0.33;
-
         this.currentKeys = {};
 
-        // canJump enable
         this.canJump = true;
         this.gravity = 0.272;
         this.state = 'run'
 
-        this.init();
         this.isDead = false;
         this.jump_v = 0;
         this.isJumping = false;
-     
-     
-        this.jumpCount = 0;
-    
 
+        this.jumpCount = 0;
         this.canGoRight = true;
 
         this.collision = {
@@ -35,19 +29,17 @@ class Player extends GameObject {
         }
 
         this.groundY = super.groundY
-        
+        this.init();
     }
 
     init() {
 
-        let shouldHandleKeyDown = true;
-
         // tellin if keys are pressed or not
         document.addEventListener('keydown', (event) => {
-            if (event.code === 'ArrowUp' || event.code === 'ArrowDown' || event.code === 'ArrowLeft' || event.code === 'ArrowRight'|| event.code === 'Space') {
-
-                shouldHandleKeyDown = false;
+            if (event.code === 'ArrowUp' || event.code === 'ArrowDown' || event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'Space') {
+                //prevents arrow keys from scrolling whilst playing
                 event.preventDefault();
+                // to being able to use the keys 
                 this.currentKeys[event.code] = true;
             }
         });
@@ -55,12 +47,12 @@ class Player extends GameObject {
         document.addEventListener('keyup', (event) => {
             if (event.code === 'ArrowUp' || event.code === 'ArrowDown' || event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
                 event.preventDefault();
-
                 this.currentKeys[event.code] = false;
             }
         })
 
 
+        // initializing the sprites, setting their source, frames, fps, and size 
         this.sprites = {
             run: {
                 src: './assets/run.png',
@@ -72,7 +64,7 @@ class Player extends GameObject {
                 },
                 image: null,
             },
-            idle: {
+            jump: {
                 src: './assets/run1.png',
                 frames: 1,
                 fps: 1,
@@ -84,6 +76,7 @@ class Player extends GameObject {
             },
         }
 
+        // load images
         Object.values(this.sprites).forEach((sprite) => {
             sprite.image = new Image();
             sprite.image.src = sprite.src;
@@ -92,8 +85,10 @@ class Player extends GameObject {
     }
 
     update(timePassedSinceLastRender) {
+        // calls update function of the parent
         super.update();
 
+        // movements only if the player is not dead
         if (!this.isDead) {
             // moving right
             if (this.currentKeys['ArrowRight'] && this.canGoRight) {
@@ -107,30 +102,29 @@ class Player extends GameObject {
             } else {
                 this.dx = 0;
             }
+            // jumping with arrowup and space keys
+            if (this.currentKeys['ArrowUp'] || this.currentKeys['Space']) {
 
-            if (this.currentKeys['ArrowUp']  || this.currentKeys['Space']) {
-               
                 if (this.y === this.groundY - this.height / 2) {
                     this.jump_v = -10;
                     this.currentKeys['ArrowUp'] = false;
-                    this.currentKeys['Space'] = false; 
-                    this.grounded = false; 
+                    this.currentKeys['Space'] = false;
+                    this.grounded = false;
                     this.isJumping = true;
                 }
+            }
 
-            
-            } 
-
-            // if (this.isJumping === false) 
+            // adding the gravity to the velocity
             this.jump_v += this.gravity;
-            // updating the y coordinates
 
+            // updating the y coordinates
             this.y += this.jump_v;
 
+            // storing the last direction if the player is moving
             if (this.dx !== 0) this.lastDirection = this.dx;
 
+            // updating the x coordinates
             this.x += timePassedSinceLastRender * this.dx * this.speed;
-
 
             // check for right boundary
             if (this.x + this.width / 2 > this.CONFIG.width) this.x = this.CONFIG.width - this.width / 2;
@@ -144,24 +138,8 @@ class Player extends GameObject {
                 this.isJumping = false;
             }
 
-            // check for top boundary
-            //if (this.y - this.height < 0) this.y = 0 + this.height / 2;
-
-            // if you do not press a button the state is idle
-            // this.state = 'run';
-            // this.state = this.dx === 0 ? 'idle' : 'run';
-
-            this.state = this.isJumping ? 'idle': 'run';
-
-
-            // console.log("x:", this.x)
-
-            // console.log("height", this.height)
-            // console.log("width", this.width)''
-            // console.log("config width", this.CONFIG.width)
-            // console.log("config height", this.CONFIG.height)
-            // console.log(this.dx)
-            // console.log('this canJump v: ', this.jump_v)
+            // if the player jumps the state is jump other than that it is run
+            this.state = this.isJumping ? 'jump' : 'run';
         }
     }
 
@@ -172,12 +150,10 @@ class Player extends GameObject {
         this.ctx.translate(this.x, this.y)
         this.ctx.scale(this.lastDirection, 1);
 
-      
-
-
-
+        // get the coordinates on the sprite sheet
         let coordinates = this.getImageSpriteCoordinates(this.sprites[this.state]);
 
+        //draw the right image of the sprite sheet
         this.ctx.drawImage(
             this.sprites[this.state].image,
             coordinates.sourceX,
@@ -193,18 +169,22 @@ class Player extends GameObject {
         this.ctx.resetTransform();
     }
 
-
-
     getBoundingBox() {
         let bb = super.getBoundingBox();
 
-        // change the size of the bounding box
+        // change the size of the bounding box 
 
-        bb.w = bb.w *0.5;
-        bb.x = bb.x - bb.w/2;
+        // of the player jumps the bounding box should be bigger because he exentds his leg
+        if(!this.isJumping) {
+        bb.w = bb.w * 0.5;
+        bb.x = bb.x - bb.w / 2;
+        } else {
+            bb.w = bb.w*0.7;
+            bb.x = bb.x -bb.w/2;
+        }
 
-        bb.h = bb.h*0.9;
-        bb.y = bb.y - bb.h/2;
+        bb.h = bb.h * 0.9;
+        bb.y = bb.y - bb.h / 2;
 
         return bb;
     }

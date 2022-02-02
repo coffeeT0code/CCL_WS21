@@ -76,9 +76,12 @@ const init = () => {
     // spawning the first obstacle
     spawnObstacles();
 
+    
+
     player.groundY = CONFIG.height;
 
     lastTickTimestamp = performance.now();
+    
     gameLoop();
 }
 
@@ -105,8 +108,7 @@ const update = (timePassedSinceLastRender) => {
 
 
     // if the acheived points are the same as the value to win the homebase spawns as new object 
-    if (pointsDisplay === pointsToWin) {
-        console.log('you won!')
+    if (pointsDisplay === pointsToWin && canvasEnd.style.display !== 'flex') {
         if (base === undefined) {
             base = new Base(ctx, CONFIG.width + 578, 240, 978, 457, CONFIG)
             obstacles.push(base)
@@ -122,7 +124,6 @@ const update = (timePassedSinceLastRender) => {
             player.dx = 0;
             player.y = 100;
             pointsDisplay = 0;
-            console.log('base collision')
             obstacles.length = 0;
             spawnObstacles();
             base = undefined;
@@ -193,7 +194,6 @@ const update = (timePassedSinceLastRender) => {
         // when the player dies disable all keyboard commands in player.js and set dx to 0. 
         player.isDead = true;
         player.dx = 0;
-        player.state = 'idle'
         obstacles.lenght = 0;
 
         // make the Gameover screen canvas visible
@@ -210,7 +210,7 @@ const update = (timePassedSinceLastRender) => {
         // when the player dies disable all keyboard commands in player.js and set dx to 0. 
         player.isDead = true;
         player.dx = 0;
-        player.state = 'idle'
+       
         obstacles.lenght = 0;
         currentScore = pointsDisplay;
 

@@ -10,20 +10,16 @@ class Rock extends GameObject {
     }
 
     init() {
-
+        //creating the image
         this.image = new Image();
         this.image.src = "./assets/rock.png"
-
-    };
-
-    update() {
 
     };
 
     render() {
         super.render();
 
-        // making it move
+        // making it move and drawing the image
         this.x -=6;
         this.ctx.translate(this.x, this.y)
         this.ctx.drawImage(this.image, -this.width / 2, -this.height / 2, this.width, this.height);

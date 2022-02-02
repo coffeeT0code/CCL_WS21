@@ -9,7 +9,7 @@ class Storm extends GameObject {
     }
 
     init() {
-
+        // creating the spritesheet and setting frames, fps, and size
         this.sprites = {
                 storm: {
                     src: './assets/storm.png',
@@ -28,17 +28,12 @@ class Storm extends GameObject {
             });
     };
 
-    update() {
-       
-    };
-
-    render() {
-
-            
+    render() {            
         super.render();
 
         this.ctx.translate(this.x, this.y)
 
+        // getting the coordinates for the sprite
         let coordinates = this.getImageSpriteCoordinates(this.sprites[this.state]);
 
         this.ctx.drawImage(
@@ -51,8 +46,6 @@ class Storm extends GameObject {
             -this.height / 2,
             this.width,
             this.height,
-
-        
         );
 
         this.ctx.resetTransform(); 
